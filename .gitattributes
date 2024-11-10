@@ -1,0 +1,2 @@
+# 将所有文本文件保存为 Unix 样式的 LF
+* text=auto eol=lf
