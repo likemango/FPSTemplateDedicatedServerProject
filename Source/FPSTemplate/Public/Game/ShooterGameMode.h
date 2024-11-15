@@ -27,4 +27,5 @@ private:
 
 	void InitGameLift();
 	void InitServerParameters(FServerParameters& OutServerParameters);
+	void GetPortFromCommandLine(int32& OutPort);
 };

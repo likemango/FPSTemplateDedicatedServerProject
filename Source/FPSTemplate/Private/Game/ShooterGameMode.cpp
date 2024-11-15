@@ -44,6 +44,26 @@ void AShooterGameMode::InitServerParameters(FServerParameters& OutServerParamete
 	UE_LOG(GameServerLog, Log, TEXT("PID: %s"), *OutServerParameters.m_processId);
 }
 
+void AShooterGameMode::GetPortFromCommandLine(int32& OutPort)
+{
+	TArray<FString> Tokens;
+	TArray<FString> Switches;
+	FCommandLine::Parse(FCommandLine::Get(), Tokens, Switches);
+	for(const FString& Switch : Switches)
+	{
+		FString Key;
+		FString Value;
+		if(Switch.Split(FString("="), &Key, &Value, ESearchCase::IgnoreCase))
+		{
+			if(Key.Equals(FString("port"), ESearchCase::IgnoreCase))
+			{
+				OutPort = FCString::Atoi(*Value);
+				return;
+			}
+		}
+	}
+}
+
 void AShooterGameMode::InitGameLift()
 {
 	UE_LOG(GameServerLog, Log, TEXT("Initializing the GameLift Server"));
@@ -98,6 +118,10 @@ void AShooterGameMode::InitGameLift()
 	};
 	ProcessParameters.OnHealthCheck.BindLambda(OnHealthCheck);
 
+	// default as 7777
+	int32 Port = FURL::UrlConfig.DefaultPort;
+	GetPortFromCommandLine(Port);
+	
 	//The game server gets ready to report that it is ready to host game sessions
 	//and that it will listen on port 7777 for incoming player connections.
 	ProcessParameters.port = 7777;
